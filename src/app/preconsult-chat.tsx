@@ -192,142 +192,6 @@ function ChatMessage({
   );
 }
 
-function CustomDay(props: ComponentProps<typeof PickersDay>) {
-  const { day, outsideCurrentMonth, disabled, ...other } = props;
-  const theme = useTheme();
-
-  // Check if the date is in the future (disabled)
-  const isToday = dayjs().isSame(day, "day");
-  const isFuture = dayjs(day).isAfter(dayjs(), "day");
-  const isPast = dayjs(day).isBefore(dayjs(), "day");
-
-  return (
-    <PickersDay
-      {...other}
-      day={day}
-      outsideCurrentMonth={outsideCurrentMonth}
-      disabled={disabled}
-      sx={{
-        position: "relative",
-        ...(isFuture && {
-          // Style for future (disabled) dates
-          opacity: 0.3,
-          textDecoration: "line-through",
-          color: theme.palette.text.disabled,
-          backgroundColor: theme.palette.action.disabledBackground,
-          "&:hover": {
-            backgroundColor: theme.palette.action.disabledBackground,
-            opacity: 0.3,
-          },
-          cursor: "not-allowed",
-          "&::after": {
-            content: '"❌"',
-            position: "absolute",
-            top: "2px",
-            right: "2px",
-            fontSize: "8px",
-            lineHeight: 1,
-          },
-        }),
-        ...(isToday &&
-          !isFuture && {
-            // Ensure today is clearly visible when not disabled
-            fontWeight: "bold",
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            border: `2px solid ${theme.palette.primary.dark}`,
-            "&:hover": {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }),
-        ...(isPast &&
-          !isToday && {
-            // Style for past dates (available)
-            backgroundColor: theme.palette.background.paper,
-            "&:hover": {
-              backgroundColor: theme.palette.action.hover,
-            },
-          }),
-      }}
-    />
-  );
-}
-
-function CustomMonthButton(props: any) {
-  const { month, disabled, selected, children, onClick, ...other } = props;
-  const theme = useTheme();
-
-  // Check if the month is in the future (disabled)
-  const today = dayjs();
-  const monthDate = dayjs(month);
-  const isCurrentMonth =
-    monthDate.isSame(today, "month") && monthDate.isSame(today, "year");
-  const isFutureMonth = monthDate.isAfter(today, "month");
-  const isPastMonth = monthDate.isBefore(today, "month");
-
-  return (
-    <Button
-      onClick={onClick}
-      disabled={disabled || isFutureMonth}
-      sx={{
-        position: "relative",
-        minWidth: "60px",
-        height: "36px",
-        margin: "4px",
-        textTransform: "none",
-        ...(isFutureMonth && {
-          // Style for future (disabled) months
-          opacity: 0.3,
-          textDecoration: "line-through",
-          color: `${theme.palette.text.disabled} !important`,
-          backgroundColor: `${theme.palette.action.disabledBackground} !important`,
-          "&:hover": {
-            backgroundColor: `${theme.palette.action.disabledBackground} !important`,
-            opacity: 0.3,
-          },
-          cursor: "not-allowed",
-          "&::after": {
-            content: '"❌"',
-            position: "absolute",
-            top: "2px",
-            right: "2px",
-            fontSize: "8px",
-            lineHeight: 1,
-          },
-        }),
-        ...(isCurrentMonth &&
-          !isFutureMonth && {
-            // Ensure current month is clearly visible when not disabled
-            fontWeight: "bold",
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            border: `2px solid ${theme.palette.primary.dark}`,
-            "&:hover": {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }),
-        ...(isPastMonth &&
-          !isCurrentMonth && {
-            // Style for past months (available)
-            backgroundColor: theme.palette.background.paper,
-            "&:hover": {
-              backgroundColor: theme.palette.action.hover,
-            },
-          }),
-        ...(selected &&
-          !isFutureMonth && {
-            // Style for selected month
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            fontWeight: "bold",
-          }),
-      }}
-    >
-      {children}
-    </Button>
-  );
-}
-
 export default function PreConsultChat() {
   const theme = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -873,9 +737,17 @@ export default function PreConsultChat() {
                   <Box className="w-full">
                     <textarea
                       {...field}
-                      placeholder="Type your answer here..."
+                      placeholder="Type your answer here... (Press Enter to submit, Shift+Enter for new line)"
                       rows={3}
                       className="resize-none w-full py-2 px-3 pr-10 rounded-md border border-gray-300 outline-none"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          if (!isProcessing && field.value?.trim()) {
+                            handleMedicalSubmit(onMedicalAnswerSubmit)();
+                          }
+                        }
+                      }}
                     ></textarea>
                     {medicalErrors.answer && (
                       <span className="text-red-500 text-xs mt-1">
