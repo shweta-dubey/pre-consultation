@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { MUIThemeProvider } from "@/components/theme-provider";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { MUIThemeProvider } from "@/components/theme-provider";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "PreConsult AI",
-  description: "Your personal pre-consultation assistant",
+  title: "Pre-Consultation Chat",
+  description: "A pre-consultation chatbot for medical appointments",
 };
 
 export default function RootLayout({
@@ -13,20 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="font-body antialiased">
+    <html lang="en" className={inter.variable}>
+      <body className={inter.className}>
         <MUIThemeProvider>{children}</MUIThemeProvider>
       </body>
     </html>

@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 
+// Patient data validation schema
 const PatientDataSchema = z.object({
   demographics: z.object({
     name: z.string(),
@@ -16,20 +17,22 @@ const PatientDataSchema = z.object({
   ),
 });
 
-export async function submitPreConsultData(
-  data: z.infer<typeof PatientDataSchema>
-) {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+type PatientData = z.infer<typeof PatientDataSchema>;
 
-  const isSuccess = Math.random() > 0.1; // 90% success rate
+export async function submitPreConsultData(data: PatientData) {
+  try {
+    // Validate the data
+    PatientDataSchema.parse(data);
 
-  if (isSuccess) {
-    return { success: true, message: "Data submitted successfully." };
-  } else {
-    return {
-      success: false,
-      message:
-        "An error occurred while submitting your responses. Please try again.",
-    };
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // In a real app, you would save to database here
+    console.log("Submitted patient data:", data);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error submitting data:", error);
+    return { success: false, error: "Failed to submit data" };
   }
 }
