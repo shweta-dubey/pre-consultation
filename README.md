@@ -2,7 +2,8 @@
 
 A modern, responsive web application for collecting patient information and medical history before consultations. Built with Next.js, React, TypeScript, and Material-UI, featuring an intelligent questionnaire system and intuitive user interface.
 
-## 🚀 Features
+##  video link
+- https://github.com/user-attachments/assets/cc1e6218-70a3-4da6-9578-276864e444ec
 
 ### 📋 Patient Information Collection
 
